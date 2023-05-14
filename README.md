@@ -5,6 +5,7 @@ _If you'd like to contribute, pull requests are welcome!_
 
 ### Todo
 
+
 - [x] CSS
 - [ ] Pictures for the shows
 - [x] More configuration options
