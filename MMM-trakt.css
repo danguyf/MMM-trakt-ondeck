@@ -1,61 +1,32 @@
 .traktEpisode {
   padding-left: 6px;
   padding-right: 6px;
-  position: relative;
-  width: 200px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.traktEpisode span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
 }
 
 .traktAirtime {
   padding-left: 6px;
-  position: relative;
-  width: 200px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.traktAirtime span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
 }
 
 .traktShowTitle {
-  position: relative;
-  width: 200px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.traktShowTitle span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
 }
 
 .traktTitle {
-  position: relative;
-  width: 200px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.traktTitle span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
-}
-
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
 }
 
 .module.MMM-trakt {
