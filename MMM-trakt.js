@@ -46,7 +46,8 @@ Module.register("MMM-trakt", {
 	getHeader: function () {
 		return this.data.header;
 	},
-	getDom: function() {
+
+getDom: function() {
     let wrapper = document.createElement('div');
     if (Object.keys(this.traktData).length === 0 && this.traktCode === undefined) {
       wrapper.innerHTML = 'Error loading module. Please check the logs.';
@@ -56,6 +57,7 @@ Module.register("MMM-trakt", {
     } else {
       let table = document.createElement('table');
       table.className = this.config.styling.moduleSize + " traktHeader";
+      let showCount = 0; // Keep track of the number of shows to generate unique ids
       for (let show in this.traktData) {
 				let date = moment.utc(this.traktData[show].episode.first_aired).local();
 				if(date.isBetween(moment(), moment().add(this.config.days-1, "d"), 'days', '[]')){
@@ -66,7 +68,22 @@ Module.register("MMM-trakt", {
 	        let showTitleCell = tableRow.insertCell();
 	        showTitleCell.innerHTML = this.traktData[show].show.title;
 	        showTitleCell.className = 'bright traktShowTitle';
+          showTitleCell.id = 'showTitle' + showCount; // Add a unique id
 
+          // Add scroll function if text overflows cell
+          let scrollAmount = 0;
+          function scrollTitle() {
+            showTitleCell.scrollLeft += 1;
+            scrollAmount++;
+            if(scrollAmount < showTitleCell.scrollWidth) {
+              setTimeout(scrollTitle, 20);
+            }
+          }
+          if (showTitleCell.offsetWidth < showTitleCell.scrollWidth) {
+            setTimeout(scrollTitle, 20000); // Start scrolling after 20 seconds
+          }
+
+          showCount++;
 	        // Episode
 	        let seasonNo = (this.traktData[show].episode.season);
 	        let episode = (this.traktData[show].episode.number);
@@ -104,6 +121,11 @@ Module.register("MMM-trakt", {
     }
     return wrapper;
 	},
+
+	
+	
+	
+	
 	updateTrakt: function() {
 		var self = this;
 		if (self.config.client_id === "") {
