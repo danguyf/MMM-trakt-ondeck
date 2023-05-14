@@ -1,34 +1,38 @@
 .traktEpisode {
   padding-left: 6px;
   padding-right: 6px;
-  max-width: 200px; /* Adjust as needed */
-  overflow: hidden;
+  max-width: 200px;
+  overflow: auto;
   text-overflow: ellipsis;
   white-space: nowrap;
+  scrollbar-width: thin;
 }
 
 .traktAirtime {
   padding-left: 6px;
-  max-width: 200px; /* Adjust as needed */
-  overflow: hidden;
+  max-width: 200px;
+  overflow: auto;
   text-overflow: ellipsis;
   white-space: nowrap;
+  scrollbar-width: thin;
 }
 
 .traktShowTitle {
-  max-width: 200px; /* Adjust as needed */
-  overflow: hidden;
+  max-width: 200px;
+  overflow: auto;
   text-overflow: ellipsis;
   white-space: nowrap;
+  scrollbar-width: thin;
 }
 
 .traktTitle {
-  max-width: 200px; /* Adjust as needed */
-  overflow: hidden;
+  max-width: 200px;
+  overflow: auto;
   text-overflow: ellipsis;
   white-space: nowrap;
+  scrollbar-width: thin;
 }
 
 .module.MMM-trakt {
-  margin-right: 10px; /* Adjust as needed */
+  margin-right: 10px;
 }
