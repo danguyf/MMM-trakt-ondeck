@@ -1,5 +1,3 @@
-/* global Module */
-
 Module.register("MMM-trakt", {
 	defaults: {
 			updateInterval: 60 * 60 * 1000, //every 60 minutes
@@ -48,7 +46,6 @@ Module.register("MMM-trakt", {
 	getHeader: function () {
 		return this.data.header;
 	},
-
 	getDom: function() {
     let wrapper = document.createElement('div');
     if (Object.keys(this.traktData).length === 0 && this.traktCode === undefined) {
