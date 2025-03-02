@@ -1,16 +1,17 @@
 Module.register("MMM-trakt", {
 	defaults: {
-			updateInterval: 60 * 60 * 1000, //every 60 minutes
-			initialLoadDelay: 0,
-			days: 1,
-			debug: false,
-		  styling : {
+		updateInterval: 60 * 60 * 1000, //every 60 minutes
+		initialLoadDelay: 0,
+		days: 1,
+		type: "upcoming",
+		debug: false,
+		styling : {
 		  	moduleSize: "small",
-				daysUntil: false,
-				daysUntilFormat: "hh:mm",
-				dateFormat: "D.M hh:mm",
-				showEpisodeTitle: true,
-			},
+			daysUntil: false,
+			daysUntilFormat: "hh:mm",
+			dateFormat: "D.M hh:mm",
+			showEpisodeTitle: true,
+		},
 	},
 	getTranslations() {
 		return {
@@ -36,95 +37,94 @@ Module.register("MMM-trakt", {
 		this.traktCode;
 		this.loaded = false;
 		this.scheduleUpdate(this.config.initialLoadDelay);
-    // Schedule update interval for ui.
-    var self = this;
-    setInterval(function () {
-      self.updateDom();
-    }, 1000 * 10); // 1min
+		// Schedule update interval for ui.
+		var self = this;
+		setInterval(function () {
+		      self.updateDom();
+		}, 1000 * 10); // 1min
 	},
 
 	getHeader: function () {
 		return this.data.header;
 	},
 
-getDom: function() {
-    let wrapper = document.createElement('div');
-    if (Object.keys(this.traktData).length === 0 && this.traktCode === undefined) {
-      wrapper.innerHTML = 'Error loading module. Please check the logs.';
-    } else if (Object.keys(this.traktData).length === 0) {
-      wrapper.innerHTML = 'Please enter the following on https://trakt.tv/activate: ' + this.traktCode
-				+ '<br> Or scan the following QR Code: <br> <img src="/modules/MMM-trakt/qr-code.svg" alt="QR Code" height="15%" width="15%">';
-    } else {
-      let table = document.createElement('table');
-      table.className = this.config.styling.moduleSize + " traktHeader";
-      let showCount = 0; // Keep track of the number of shows to generate unique ids
-      for (let show in this.traktData) {
-				let date = moment.utc(this.traktData[show].episode.first_aired).local();
-				if(date.isBetween(moment(), moment().add(this.config.days-1, "d"), 'days', '[]')){
-	        let tableRow = table.insertRow(-1);
-	        tableRow.className = 'normal';
+	getDom: function() {
+		let wrapper = document.createElement('div');
+		if (Object.keys(this.traktData).length === 0 && this.traktCode === undefined) {
+			wrapper.innerHTML = 'Error loading module. Please check the logs.';
+		} else if (Object.keys(this.traktData).length === 0) {
+			wrapper.innerHTML = 'Please enter the following on https://trakt.tv/activate: ' + this.traktCode
+				+ '<br> Or scan the following QR Code: <br> '
+				+ '<img src="/modules/MMM-trakt/qr-code.svg" alt="QR Code" height="15%" width="15%">';
+		} else {
+			let table = document.createElement('table');
+			table.className = this.config.styling.moduleSize + " traktHeader";
+			let showCount = 0; // Keep track of the number of shows to generate unique ids
+			let shows = this.traktData.sort((a,b) => moment.utc(b.next_episode.first_aired) - moment.utc(a.next_episode.first_aired));
+			for (let show in shows) {
+				let date = moment.utc(this.traktData[show].next_episode.first_aired).local();
+				if (this.config.type == "on-deck" || date.isBetween(moment().subtract(this.config.days, "d"), moment().add(1, "d"), 'days', '[]')) {
+					let tableRow = table.insertRow(-1);
+					tableRow.className = 'normal';
 
-	        // Name
-	        let showTitleCell = tableRow.insertCell();
-	        showTitleCell.innerHTML = this.traktData[show].show.title;
-	        showTitleCell.className = 'bright traktShowTitle';
-          showTitleCell.id = 'showTitle' + showCount; // Add a unique id
+					// Name
+					let showTitleCell = tableRow.insertCell();
+					showTitleCell.innerHTML = this.traktData[show].show.title;
+					showTitleCell.className = 'bright traktShowTitle';
+					showTitleCell.id = 'showTitle' + showCount; // Add a unique id
 
-          // Add scroll function if text overflows cell
-          let scrollAmount = 0;
-          function scrollTitle() {
-            showTitleCell.scrollLeft += 1;
-            scrollAmount++;
-            if(scrollAmount < showTitleCell.scrollWidth) {
-              setTimeout(scrollTitle, 20);
-            }
-          }
-          if (showTitleCell.offsetWidth < showTitleCell.scrollWidth) {
-            setTimeout(scrollTitle, 20000); // Start scrolling after 20 seconds
-          }
+					// Add scroll function if text overflows cell
+					let scrollAmount = 0;
+					function scrollTitle() {
+						showTitleCell.scrollLeft += 1;
+						scrollAmount++;
+						if(scrollAmount < showTitleCell.scrollWidth) {
+							setTimeout(scrollTitle, 20);
+						}
+					}
+					if (showTitleCell.offsetWidth < showTitleCell.scrollWidth) {
+						setTimeout(scrollTitle, 20000); // Start scrolling after 20 seconds
+					}
 
-          showCount++;
-	        // Episode
-	        let seasonNo = (this.traktData[show].episode.season);
-	        let episode = (this.traktData[show].episode.number);
-	        seasonNo = seasonNo <= 9 ? seasonNo.toLocaleString(undefined, { minimumIntegerDigits: 2 }) : seasonNo.toString();
+					showCount++;
+					// Episode
+					let seasonNo = (this.traktData[show].next_episode.season);
+					let episode = (this.traktData[show].next_episode.number);
+					seasonNo = seasonNo <= 9 ? seasonNo.toLocaleString(undefined, { minimumIntegerDigits: 2 }) : seasonNo.toString();
 					episode = episode <= 9 ? episode.toLocaleString(undefined, { minimumIntegerDigits: 2 }) : episode.toString();
-	        let episodeCell = tableRow.insertCell();
-	        episodeCell.innerHTML = 'S' + seasonNo + 'E' + episode;
-	        episodeCell.className = 'traktEpisode';
+					let episodeCell = tableRow.insertCell();
+					episodeCell.innerHTML = 'S' + seasonNo + 'E' + episode;
+					episodeCell.className = 'traktEpisode';
 
-	        // Title
-	        if (this.config.styling.showEpisodeTitle) {
-	          let titleCell = tableRow.insertCell();
-	          const episodeTitle = this.traktData[show].episode.title;
-	          titleCell.innerHTML = episodeTitle === null ? '' : '\'' + episodeTitle + '\'';
-	          titleCell.className = "traktTitle";
-	        }
-	        // Airtime
-	        var airtime;
-	        if (this.config.styling.daysUntil) {
-	          airtime = moment.utc(this.traktData[show].episode.first_aired).local().calendar(moment.utc().local(), {
-	            sameDay: '[' + this.translate('TODAY') + '] ' + this.config.styling.daysUntilFormat,
-	            nextDay: '[' + this.translate('TOMORROW') + '] ' + this.config.styling.daysUntilFormat,
-	            nextWeek: this.config.styling.dateFormat,
-	            sameElse: this.config.styling.dateFormat
-	          });
-	        } else {
-	          airtime = moment.utc(this.traktData[show].episode.first_aired).local().format(this.config.styling.dateFormat);
-	        }
-	        let airtimeCell = tableRow.insertCell();
-	        airtimeCell.innerHTML = airtime;
-	        airtimeCell.className = 'light traktAirtime';
-	      }
-	      wrapper.appendChild(table);
+					// Title
+					if (this.config.styling.showEpisodeTitle) {
+						let titleCell = tableRow.insertCell();
+						const episodeTitle = this.traktData[show].next_episode.title;
+						titleCell.innerHTML = episodeTitle === null ? '' : '\'' + episodeTitle + '\'';
+						titleCell.className = "traktTitle";
+					}
+					// Airtime
+					var airtime;
+					if (this.config.styling.daysUntil) {
+						airtime = moment.utc(this.traktData[show].next_episode.first_aired).local().calendar(moment.utc().local(), {
+							sameDay: '[' + this.translate('TODAY') + '] ' + this.config.styling.daysUntilFormat,
+							nextDay: '[' + this.translate('TOMORROW') + '] ' + this.config.styling.daysUntilFormat,
+							nextWeek: this.config.styling.dateFormat,
+							sameElse: this.config.styling.dateFormat
+						});
+					} else {
+						airtime = moment.utc(this.traktData[show].next_episode.first_aired)
+								.local().format(this.config.styling.dateFormat);
+					}
+					let airtimeCell = tableRow.insertCell();
+					airtimeCell.innerHTML = airtime;
+					airtimeCell.className = 'light traktAirtime';
+				}
+				wrapper.appendChild(table);
 			}
-    }
-    return wrapper;
+		}
+		return wrapper;
 	},
-
-	
-	
-	
 	
 	updateTrakt: function() {
 		var self = this;
@@ -143,6 +143,7 @@ getDom: function() {
 			debug: self.config.debug
 		});
 	},
+
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "SHOWS") {
 			this.debugLog(payload.shows);
@@ -155,22 +156,24 @@ getDom: function() {
 			this.updateDom();
 		}
 	},
+
 	scheduleUpdate: function(delay) {
 		if (typeof delay === "undefined" && delay < 0) {
 			delay = 0;
 		}
 		var self = this;
 		setTimeout(function() {
-      self.updateTrakt();
-      setInterval(function () {
-        self.updateTrakt();
-      }, self.config.updateInterval);
+			self.updateTrakt();
+			setInterval(function () {
+				self.updateTrakt();
+			}, self.config.updateInterval);
 		}, delay);
 	},
 
 	log: function (msg) {
 			Log.log("[" + (new Date(Date.now())).toLocaleTimeString() + "] - " + this.name + " - : ", msg);
 	},
+
 	debugLog: function (msg) {
 		if (this.config.debug) {
 			Log.log("[" + (new Date(Date.now())).toLocaleTimeString() + "] - DEBUG - " + this.name + " - : ", msg);
