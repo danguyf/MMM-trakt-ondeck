@@ -7,16 +7,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kiina/MMM-trakt.git"
+    "url": "git+https://github.com/danguyf/MMM-trakt-ondeck.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Kiina/MMM-trakt/issues"
+    "url": "https://github.com/danguyf/MMM-trakt-ondeck/issues"
   },
-  "homepage": "https://github.com/Kiina/MMM-trakt#readme",
+  "homepage": "https://github.com/danguyf/MMM-trakt-ondeck#readme",
   "dependencies": {
     "trakt.tv": "^8.0.0",
-    "trakt.tv-images": "^5.2.0"
+    "trakt.tv-images": "^5.2.0",
+    "trakt.tv-ondeck": "^8.0.0"
   }
 }
