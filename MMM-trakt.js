@@ -3,7 +3,7 @@ Module.register("MMM-trakt", {
 		updateInterval: 60 * 60 * 1000, //every 60 minutes
 		initialLoadDelay: 0,
 		days: 1,
-		type: "upcoming",
+		displayType: "upcoming",
 		debug: false,
 		styling : {
 		  	moduleSize: "small",
@@ -63,7 +63,7 @@ Module.register("MMM-trakt", {
 			let shows = this.traktData.sort((a,b) => moment.utc(b.next_episode.first_aired) - moment.utc(a.next_episode.first_aired));
 			for (let show in shows) {
 				let date = moment.utc(this.traktData[show].next_episode.first_aired).local();
-				if (this.config.type == "on-deck" || date.isBetween(moment().subtract(this.config.days, "d"), moment().add(1, "d"), 'days', '[]')) {
+				if (this.config.displayType == "on-deck" || date.isBetween(moment().subtract(this.config.days, "d"), moment().add(1, "d"), 'days', '[]')) {
 					let tableRow = table.insertRow(-1);
 					tableRow.className = 'normal';
 
@@ -171,7 +171,7 @@ Module.register("MMM-trakt", {
 	},
 
 	log: function (msg) {
-			Log.log("[" + (new Date(Date.now())).toLocaleTimeString() + "] - " + this.name + " - : ", msg);
+		Log.log("[" + (new Date(Date.now())).toLocaleTimeString() + "] - " + this.name + " - : ", msg);
 	},
 
 	debugLog: function (msg) {
