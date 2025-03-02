@@ -40,7 +40,7 @@ To run the module, you need to add the following data to your ` ~/MagicMirror/co
   config: {
     client_id: 'YOUR_API_CLIENT_ID',
     client_secret: 'YOUR_API_CLIENT_SECRET',
-    type: 'on-deck', // optional, default: upcoming
+    displayType: 'on-deck', // optional, default: upcoming
     days: 1, // optional, default: 1. 1 = today's episodes, 2 = today's and tomorrow's, 3 = etc...
     styling : {
         moduleSize: "small", // optional, possible value: (xsmall, small, medium, large, xlarge), default: small
@@ -55,8 +55,8 @@ To run the module, you need to add the following data to your ` ~/MagicMirror/co
 
 ```
 
-Setting `type` to "upcoming" will cause the plugin to display upcoming shows within the next x days as defined by `days`.  
-Setting `type` to "on-deck" will instead show the next episode of all in-progress shows on your watchlist.
+Setting `displayType` to "upcoming" will cause the plugin to display upcoming shows within the next x days as defined by `days`.  
+Setting `displayType` to "on-deck" will instead show the next episode of all in-progress shows on your watchlist.
 
 
 [Trakt.tv]:(https://trakt.tv/)
