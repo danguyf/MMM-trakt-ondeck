@@ -55,8 +55,8 @@ To run the module, you need to add the following data to your ` ~/MagicMirror/co
 
 ```
 
-Setting `displayType` to "upcoming" will cause the plugin to display upcoming shows within the next x days as defined by `days`.  
-Setting `displayType` to "on-deck" will instead show the next episode of all in-progress shows on your watchlist.
+* Setting `displayType` to "upcoming" will cause the plugin to display upcoming shows within the next x days as defined by `days`.  
+* Setting `displayType` to "on-deck" will instead show the next episode of all in-progress shows on your watchlist.
 
 
 [Trakt.tv]:(https://trakt.tv/)
