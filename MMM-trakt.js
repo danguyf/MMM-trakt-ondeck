@@ -60,9 +60,23 @@ Module.register("MMM-trakt", {
 			let table = document.createElement('table');
 			table.className = this.config.styling.moduleSize + " traktHeader";
 			let showCount = 0; // Keep track of the number of shows to generate unique ids
-			let shows = this.traktData.sort((a,b) => moment.utc(b.next_episode.first_aired) - moment.utc(a.next_episode.first_aired));
+
+			// sort on-deck in reverse chronology by next_episode, otherwise chronologically by episode
+			if (this.config.displayType == "on-deck") {
+				shows = this.traktData.sort((a,b) => moment.utc(b.next_episode.first_aired) - moment.utc(a.next_episode.first_aired));
+			} else {
+				shows = this.traktData.sort((a,b) => moment.utc(a.episode.first_aired) - moment.utc(b.episode.first_aired));
+			}
+
 			for (let show in shows) {
-				let date = moment.utc(this.traktData[show].next_episode.first_aired).local();
+				// next_episode for on-deck, otherwise episode
+				if (this.config.displayType == "on-deck") {
+					this_episode = this.traktData[show].next_episode;
+				} else {
+					this_episode = this.traktData[show].episode;
+				}
+
+				let date = moment.utc(this_episode.first_aired).local();
 				if (this.config.displayType == "on-deck" || date.isBetween(moment().subtract(this.config.days, "d"), moment().add(1, "d"), 'days', '[]')) {
 					let tableRow = table.insertRow(-1);
 					tableRow.className = 'normal';
@@ -88,8 +102,8 @@ Module.register("MMM-trakt", {
 
 					showCount++;
 					// Episode
-					let seasonNo = (this.traktData[show].next_episode.season);
-					let episode = (this.traktData[show].next_episode.number);
+					let seasonNo = (this_episode.season);
+					let episode = (this_episode.number);
 					seasonNo = seasonNo <= 9 ? seasonNo.toLocaleString(undefined, { minimumIntegerDigits: 2 }) : seasonNo.toString();
 					episode = episode <= 9 ? episode.toLocaleString(undefined, { minimumIntegerDigits: 2 }) : episode.toString();
 					let episodeCell = tableRow.insertCell();
@@ -99,21 +113,21 @@ Module.register("MMM-trakt", {
 					// Title
 					if (this.config.styling.showEpisodeTitle) {
 						let titleCell = tableRow.insertCell();
-						const episodeTitle = this.traktData[show].next_episode.title;
+						const episodeTitle = this_episode.title;
 						titleCell.innerHTML = episodeTitle === null ? '' : '\'' + episodeTitle + '\'';
 						titleCell.className = "traktTitle";
 					}
 					// Airtime
 					var airtime;
 					if (this.config.styling.daysUntil) {
-						airtime = moment.utc(this.traktData[show].next_episode.first_aired).local().calendar(moment.utc().local(), {
+						airtime = moment.utc(this_episode.first_aired).local().calendar(moment.utc().local(), {
 							sameDay: '[' + this.translate('TODAY') + '] ' + this.config.styling.daysUntilFormat,
 							nextDay: '[' + this.translate('TOMORROW') + '] ' + this.config.styling.daysUntilFormat,
 							nextWeek: this.config.styling.dateFormat,
 							sameElse: this.config.styling.dateFormat
 						});
 					} else {
-						airtime = moment.utc(this.traktData[show].next_episode.first_aired)
+						airtime = moment.utc(this_episode.first_aired)
 								.local().format(this.config.styling.dateFormat);
 					}
 					let airtimeCell = tableRow.insertCell();
@@ -140,6 +154,7 @@ Module.register("MMM-trakt", {
 			client_id: self.config.client_id,
 			client_secret: self.config.client_secret,
 			days: self.config.days,
+			displayType: self.config.displayType,
 			debug: self.config.debug
 		});
 	},
