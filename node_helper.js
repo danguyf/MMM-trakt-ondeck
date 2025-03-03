@@ -73,7 +73,7 @@ module.exports = NodeHelper.create({
             self.debugLog(trakt);
             refreshTokenPeriodically();  // Add this line to start refreshing the token periodically
 
-			if (this.type == "on-deck") {
+			if (self.displayType == "on-deck") {
 				trakt.ondeck.getAll().then(payload => {
 					self.sendSocketNotification("SHOWS", {
 						shows: payload.shows
@@ -101,7 +101,7 @@ module.exports = NodeHelper.create({
     },
     socketNotificationReceived: function(notification, payload) {
         this.debug = payload.debug;
-        this.type = payload.type;
+        this.displayType = payload.displayType;
         if (notification === "PULL") {
             this.createFetcher(payload.client_id, payload.client_secret, payload.days);
         }
